@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Trip Bill Manager</string>
+    <string name="create_account">Create Account</string>
+    <string name="add_entry">Add Entry</string>
+    <string name="entry_name">Entry</string>
+    <string name="add_user">Add User</string>
+    <string name="manage_user">Manage Users</string>
+    <string name="total">Total</string>
+    <string name="time">Time</string>
+    <string name="date">Date</string>
+    <string name="place">Place</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_create_entry">Create Entry</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="select_photo">Select Photo</string>
+    <string name="title_activity_user_manage">User Management</string>
+    <string name="title_activity_bill_detail">BillDetailActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_account_manager">AccountManagerActivity</string>
+    <string name="title_activity_account_manage">AccountManageActivity</string>
+
+</resources>

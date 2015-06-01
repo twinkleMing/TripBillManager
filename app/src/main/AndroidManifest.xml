@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="edu.ksu.yangming.tripbillmanager" >
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+
+    <application
+        android:name=".Data"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <uses-library android:name="com.google.android.maps" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBZ5dcrWpahB_nxUyjFesVV2qoaC8jsgEo" />
+
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".EntryManageActivity"
+            android:label="@string/title_activity_create_entry" >
+        </activity>
+        <activity
+            android:name=".UserManageActivity"
+            android:label="@string/title_activity_user_manage" >
+        </activity>
+        <activity
+            android:name=".BillDetailActivity"
+            android:label="@string/title_activity_bill_detail" >
+        </activity>
+        <activity
+            android:name=".AccountManagerActivity"
+            android:label="@string/title_activity_account_manager" >
+        </activity>
+        <activity
+            android:name=".AccountManageActivity"
+            android:label="@string/title_activity_account_manage" >
+        </activity>
+    </application>
+
+</manifest>

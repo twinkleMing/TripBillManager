@@ -85,6 +85,9 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String acc_name = input.getText().toString();
+                if (acc_name.length() == 0)  {
+                    dialog.cancel();
+                }
                 Data.Account account = new Data.Account(acc_name);
                 ((Data)getApplication()).accounts.add(account);
                 account_strs.add(acc_name);

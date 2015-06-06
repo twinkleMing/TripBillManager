@@ -89,7 +89,7 @@
                 android:layout_height="50dp"/>
             <TextView
                 android:id="@+id/place"
-                android:layout_height="50dp"
+                android:layout_height="80dp"
                 android:layout_width="50dp"
                 android:gravity="center"
                 android:layout_below = "@id/date"
@@ -103,13 +103,44 @@
                 android:lines="2"
                 android:maxLines="4"
                 android:layout_height="80dp"/>
+            <TextView
+                android:id="@+id/paidBy"
+                android:layout_height="50dp"
+                android:layout_width="50dp"
+                android:gravity="center"
+                android:layout_below = "@id/place"
+                android:text="@string/paidBy"/>
+            <TextView
+                android:id="@+id/payer"
+                android:layout_width="match_parent"
+                android:layout_below="@id/place"
+                android:layout_toRightOf="@id/paidBy"
+                android:gravity="center"
+                android:lines="2"
+                android:maxLines="4"
+                android:layout_height="50dp"/>
+            <TextView
+                android:id="@+id/bill_title"
+                android:layout_height="50dp"
+                android:layout_width="match_parent"
+                android:gravity="center"
+                android:layout_below = "@id/payer"
+                android:text="@string/bill_title"/>
+            <LinearLayout
+                android:id="@+id/bill_list"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below = "@id/bill_title"
+                android:layout_weight="1"
+            />
 
             <Button
                 android:id="@+id/takePhoto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_below="@id/mapDisplay"
+                android:layout_below="@id/bill_list"
                 android:text="@string/take_photo">
 
             </Button>
@@ -118,7 +149,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:layout_below="@id/mapDisplay"
+                android:layout_below="@id/bill_list"
                 android:text="@string/select_photo">
 
             </Button>

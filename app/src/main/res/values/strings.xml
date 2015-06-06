@@ -9,6 +9,9 @@
     <string name="time">Time</string>
     <string name="date">Date</string>
     <string name="place">Place</string>
+    <string name="paidBy">Payer</string>
+    <string name="bill_title">Bill Details</string>
+    <string name="bill_text">shares</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
     <string name="action_settings">Settings</string>
@@ -17,7 +20,7 @@
     <string name="select_photo">Select Photo</string>
     <string name="title_activity_user_manage">User Management</string>
     <string name="title_activity_bill_detail">BillDetailActivity</string>
-
+    <string name="no_user">Please add user first!</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_account_manager">AccountManagerActivity</string>
     <string name="title_activity_account_manage">AccountManageActivity</string>

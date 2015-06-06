@@ -1,9 +1,11 @@
 package edu.ksu.yangming.tripbillmanager;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -16,15 +18,21 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -44,8 +52,11 @@ import java.util.GregorianCalendar;
 public class EntryManageActivity extends Activity implements LocationListener {
     private EditText mEntryName;
     private EditText mSum;
+    private Double mBillSum = 0.0;
     private TextView mDateDisplay;
     private TextView mTimeDisplay;
+    private TextView mPayerDisplay;
+    private LinearLayout mBillListDisplay;
     private DatePickerDialog mDatePickerDialog;
     private TimePickerDialog mTimePickerDialog;
     private SimpleDateFormat dateFormatter;
@@ -53,6 +64,7 @@ public class EntryManageActivity extends Activity implements LocationListener {
     private GregorianCalendar calendar;
     // private ImageView image;
     private TextView mMapDisplay;
+    private String payer;
     private static final int PLACE_PICKER_REQUEST = 1;
     private static final int REQUEST_IMAGE_CAPTURE = 2;
     private static final int REQUEST_IMAGE_SELECT = 3;
@@ -66,6 +78,8 @@ public class EntryManageActivity extends Activity implements LocationListener {
     private Bundle bundle;
     private final String IMAGE_FOLDER = "BillImages/";
     private ArrayList<String> imageUrls = new ArrayList<String> ();
+    private ArrayList<String> userNames = new ArrayList<String>();
+    private ArrayList<Double> userBillSplits = new ArrayList<Double>();
     protected void createDateTimeDialog() {
         mDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
@@ -113,12 +127,44 @@ public class EntryManageActivity extends Activity implements LocationListener {
             mPlaceName = entry.locStr;
             imageUrls.addAll(entry.imageUrls);
         }
+        userNames.addAll(entry.users);
         mEntryName = (EditText) findViewById(R.id.entry_name);
         mEntryName.setRawInputType(InputType.TYPE_CLASS_TEXT);
         mEntryName.setText(entry.entry_name);
         mSum = (EditText) findViewById(R.id.sum);
         mSum.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
         mSum.setText(Double.toString(entry.sum_bill));
+        mSum.requestFocus();
+        InputMethodManager imm =  (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(mSum, InputMethodManager.SHOW_IMPLICIT);
+        mSum.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                mBillSum = Double.parseDouble(mSum.getText().toString());
+                int n = userBillSplits.size();
+                double split = Math.round(mBillSum / (double) n * 100) / 100;
+                for (int i = 0; i < n; ++i) {
+                    userBillSplits.set(i, split);
+                    LinearLayout bill_item = (LinearLayout)mBillListDisplay.getChildAt(i);
+                    EditText bill_num = (EditText) bill_item.findViewById(R.id.bill_num);
+                    bill_num.setText(Double.toString(userBillSplits.get(i)));
+                }
+            }
+        });
+        // InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        // imm.showSoftInput(mSum, InputMethodManager.SHOW_IMPLICIT);
+
         mTimeDisplay = (TextView) findViewById(R.id.timeDisplay);
         mTimeDisplay.setInputType(InputType.TYPE_NULL);
         mTimeDisplay.setText(timeFormatter.format(calendar.getTime()));
@@ -151,6 +197,31 @@ public class EntryManageActivity extends Activity implements LocationListener {
 
             }
         });
+        mPayerDisplay = (TextView) findViewById(R.id.payer);
+        if (userNames.size() == 0) payer = "";
+        else payer = userNames.get(0);
+        mPayerDisplay.setText(payer);
+        mPayerDisplay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createPayerDialog();
+            }
+        });
+
+        mBillListDisplay = (LinearLayout) findViewById(R.id.bill_list);
+        int n = userNames.size();
+        double split = Math.round(mBillSum / (double) n * 100) / 100;
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        for (int i = 0; i < n; ++i) {
+            userBillSplits.add(split);
+            LinearLayout bill_item = (LinearLayout) inflater.inflate(R.layout.item_view_user_billpay, null);
+            TextView bill_user_name = (TextView) bill_item.findViewById(R.id.bill_user);
+            bill_user_name.setText(userNames.get(i));
+            EditText bill_num = (EditText) bill_item.findViewById(R.id.bill_num);
+            bill_num.setText(Double.toString(userBillSplits.get(i)));
+            mBillListDisplay.addView(bill_item);
+        }
+
         Button takePhoto = (Button) this.findViewById(R.id.takePhoto);
         takePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,7 +263,7 @@ public class EntryManageActivity extends Activity implements LocationListener {
             public void onClick(View v) {
                 entry.location = myLocation;
                 entry.entry_name = mEntryName.getText().toString();
-                entry.sum_bill = Double.parseDouble(mSum.getText().toString());
+                entry.sum_bill = mBillSum;
                 entry.time = calendar;
                 entry.imageUrls = imageUrls;
                 entry.locStr = mPlaceName;
@@ -351,6 +422,43 @@ public class EntryManageActivity extends Activity implements LocationListener {
     protected void onStop (){
 
         super.onStop();
+    }
+
+    protected void createPayerDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Payer");
+        if (userNames.size() == 0) {
+            TextView alert = new TextView(this);
+            alert.setText(R.string.no_user);
+        }
+        else {
+            final ListView userList = new ListView(this);
+            ArrayAdapter<String> userAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,  userNames);
+            userList.setAdapter(userAdapter);
+            userList.setItemsCanFocus(false);
+            userList.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            userList.setItemChecked(0, true);
+            builder.setView(userList);
+            // Set up the buttons
+            AlertDialog.Builder ok = builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    int pos = userList.getCheckedItemPosition();
+                    payer = userNames.get(pos);
+                    mPayerDisplay.setText(payer);
+                }
+            });
+        }
+
+
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 
 /*

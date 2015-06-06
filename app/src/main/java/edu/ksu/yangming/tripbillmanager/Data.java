@@ -3,6 +3,7 @@ package edu.ksu.yangming.tripbillmanager;
 import android.app.Application;
 import android.content.Context;
 import android.location.Location;
+import android.text.format.DateFormat;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -12,12 +13,14 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 /**
@@ -27,7 +30,9 @@ public class Data extends Application implements Serializable {
     final static String DATA_FILE_NAME = "accounts";
     ArrayList<Account> accounts;
     final static SimpleDateFormat timeFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    final static SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
     public static class Account {
+
         ArrayList<Entry> entries= new ArrayList<Entry>();;
         HashMap<String, User> users= new HashMap<String, User>();
         String account_name;
@@ -77,6 +82,36 @@ public class Data extends Application implements Serializable {
                 user.removeEntry(entry);
             }
             return true;
+        }
+
+        boolean isSameDay(GregorianCalendar date1, GregorianCalendar date2) {
+            if (date1.get(Calendar.DAY_OF_MONTH) != date2.get(Calendar.DAY_OF_MONTH)) return false;
+            if (date1.get(Calendar.MONTH) != date2.get(Calendar.MONTH)) return false;
+            if (date1.get(Calendar.YEAR) != date2.get(Calendar.YEAR)) return false;
+            return true;
+        }
+        public List<List<Entry>> getEntriesByDate() {
+            List<List<Entry>> entriesByDate = new ArrayList<>();
+            GregorianCalendar currentDate = null;
+            int pos = 0;
+            for (Entry entry : entries) {
+                if (currentDate == null) currentDate = entry.time;
+                if (!isSameDay(currentDate, entry.time)) {
+                    pos++;
+                    entriesByDate.add(new ArrayList<Entry>());
+
+                }
+                entriesByDate.get(pos).add(entry);
+            }
+            return entriesByDate;
+        }
+
+        public HashMap<User, List<Entry>> getEntriesByUser() {
+            HashMap<User, List<Entry>> entriesByUser = new HashMap<User, List<Entry>>();
+            for (User user : users.values()) {
+                entriesByUser.put(user, user.user_entries);
+            }
+            return entriesByUser;
         }
 
     }
